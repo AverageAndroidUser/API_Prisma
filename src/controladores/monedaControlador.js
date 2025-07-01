@@ -1,4 +1,4 @@
-import prisma from "../prismaClient";
+import prisma from "../prismaClient.js";
 
 //Crear
 export const crearMoneda = async (req, res) => {
