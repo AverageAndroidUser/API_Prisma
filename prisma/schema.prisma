@@ -1,0 +1,32 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  //output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Moneda {
+  ID_Moneda  Int @id @default(autoincrement())
+  Nombre String 
+  Codigo String
+  Simbolo String
+  Pais Pais[] //Referencia la tabla con la foranea
+}
+
+model Pais {
+  ID_Pais Int @id @default(autoincrement())
+  Nombre String                     //Referencia local       Referencia en "Moneda"
+  Moneda Moneda? @relation(fields: [ID_Moneda], references: [ID_Moneda]) //Especificacion de la relacion
+  ID_Moneda Int //LLave foranea
+}
+/* En caso de que un campo pueda ser nulo
+Se representa asi: "Nombre String?" */
