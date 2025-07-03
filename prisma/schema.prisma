@@ -60,6 +60,8 @@ model CategoriaIEGreso{
   ID_CategoriaIEgreso Int @id @default(autoincrement())
   Nombre String
   TipoIEgreso Boolean
+  Color String
+  Imagen String
   IEGreso IEGreso[]
 }
 model IEGreso {
