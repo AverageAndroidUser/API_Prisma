@@ -43,20 +43,29 @@ export const verMonedas = async (req, res) => {
   }
 };
 
-//Actializar
+//Actualizar
 export const actualizarMonedas = async (req, res) => {
   const {id} = req.params;
-  const { Nombre, Codigo, Simbolo } = req.body;
+
+  const Campos = [ "Nombre", "Codigo", "Simbolo" ];
+  const data = {};
+
+  Campos.forEach((campo) => {
+    if (req.body[campo] !== undefined) {
+      data[campo] = req.body[campo];
+    }
+  });
   try {
     const moneda = await prisma.moneda.update({
       where: { ID_Moneda: parseInt(id)},
-      data: {Nombre, Codigo, Simbolo}
+      data: data,
     });
     res.json(moneda);
   } catch (error) {
     res.status(400).json({ error: "Moneda no encontrada" });
   }
 }
+
 //Eliminar
 export const eliminarMonedas = async (req, res) => {
   const {id} = req.params;

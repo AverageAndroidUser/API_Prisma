@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import monedaRutas from "./rutas/monedaRutas.js";
+import usuarioRutas from "./rutas/usuarioRutas.js";
 import { connect } from "./prismaClient.js";
 
 dotenv.config();
@@ -9,7 +10,8 @@ const app = express();
 
 app.use(cors()); // Permite peticiones desde otros orígenes (ej: frontend)
 app.use(express.json()); // Permite recibir JSON desde el frontend
-app.use("/pruebas", monedaRutas); // Prefijo para nuestras rutas
+app.use("/Monedas", monedaRutas); // Prefijo para nuestras rutas
+app.use("/Usuarios", usuarioRutas);
 
 // conectarme a la base de datos
 connect();
