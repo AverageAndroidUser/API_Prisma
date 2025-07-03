@@ -1,9 +1,23 @@
 import prisma  from "../prismaClient.js";
 
+const idUsuario = 1;
+
+export const verIEGresoInf = async (req, res) => {
+    const {id} = req.params;
+    try {
+        const iegreso = await prisma.iEGreso.findUnique({
+            where: {ID_IEgreso: parseInt(id)},
+        });
+        res.json(iegreso);
+    } catch (error) {
+        res.status(400).json({error: "IEgreso no encontrado"});
+    }
+}
+
 export const verIngresos = async (req, res) => {
     try {
         const ingresos = await prisma.iEGreso.findMany({
-            where: {TipoIEgreso: true, ID_Usuario: 2},
+            where: {TipoIEgreso: true, ID_Usuario: idUsuario},
             include: {
                 CategoriaIEgreso: true,
                 Usuario: {
@@ -34,7 +48,7 @@ export const verIngresos = async (req, res) => {
 export const verEgresos = async (req, res) => {
     try {
         const egresos = await prisma.iEGreso.findMany({
-            where: {TipoIEgreso: false, ID_Usuario: 2},
+            where: {TipoIEgreso: false, ID_Usuario: idUsuario},
             include: {
                 CategoriaIEgreso: true,
                 Usuario: {
@@ -65,7 +79,7 @@ export const verEgresos = async (req, res) => {
 export const verIEGresos = async (req, res) => {
     try {
         const IEGresos = await prisma.iEGreso.findMany({
-            where: {ID_Usuario: 2},
+            where: {ID_Usuario: idUsuario},
             include: {
                 CategoriaIEgreso: true,
                 Usuario: {
@@ -107,7 +121,7 @@ export const crearIngreso = async (req, res) => {
         Monto: ingreso.Monto,
         TipoIEgreso: true,
         ID_CategoriaIEgreso: ingreso.ID_CategoriaIEgreso,
-        ID_Usuario: ingreso.ID_Usuario || 2 
+        ID_Usuario: ingreso.ID_Usuario || idUsuario 
       }));
 
       resultado = await prisma.iEGreso.createMany({
@@ -123,7 +137,7 @@ export const crearIngreso = async (req, res) => {
           Monto: data.Monto,
           TipoIEgreso: true,
           ID_CategoriaIEgreso: data.ID_CategoriaIEGreso,
-          ID_Usuario: data.ID_Usuario || 2,
+          ID_Usuario: data.ID_Usuario || 1,
         },
       });
     }
@@ -153,7 +167,7 @@ export const crearEgreso = async (req, res) => {
         Monto: egreso.Monto,
         TipoIEgreso: false,
         ID_CategoriaIEgreso: egreso.ID_CategoriaIEgreso,
-        ID_Usuario: egreso.ID_Usuario || 2  // Default si no mandan usuario
+        ID_Usuario: egreso.ID_Usuario || idUsuario  // Default si no mandan usuario
       }));
 
       resultado = await prisma.iEGreso.createMany({
@@ -170,7 +184,7 @@ export const crearEgreso = async (req, res) => {
           Monto: data.Monto,
           TipoIEgreso: false,
           ID_CategoriaIEgreso: data.ID_CategoriaIEgreso,
-          ID_Usuario: data.ID_Usuario || 2,
+          ID_Usuario: data.ID_Usuario || idUsuario,
         },
       });
     }
