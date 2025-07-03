@@ -59,6 +59,7 @@ model Usuario {
 model CategoriaIEGreso{
   ID_CategoriaIEgreso Int @id @default(autoincrement())
   Nombre String
+  TipoIEgreso Boolean
   IEGreso IEGreso[]
 }
 model IEGreso {
