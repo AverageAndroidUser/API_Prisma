@@ -1,11 +1,11 @@
 import express from "express";
-import { crearMoneda, verMonedas } from "../controladores/monedaControlador.js";
+import { crearMoneda, verMonedas, actualizarMonedas, eliminarMonedas } from "../controladores/monedaControlador.js";
 
 const router = express.Router();
 
-router.post("/monedas", crearMoneda);
-router.get("/obtenerMonedas", verMonedas);
-//router.put("/monedas", actualizarMoneda);
-//router.delete("/monedas/:id", eliminarMoneda);
+router.post("/crearMonedas", crearMoneda);
+router.get("/verMonedas", verMonedas);
+router.put("/actualizarMonedas/:id", actualizarMonedas);
+router.delete("/eliminarMonedas/:id", eliminarMonedas);
 
 export default router;

@@ -2,20 +2,38 @@ import prisma from "../prismaClient.js";
 
 //Crear
 export const crearMoneda = async (req, res) => {
-  const {Nombre, Codigo, Simbolo } = req.body;
+  const data = req.body;
   try {
-    const moneda = await prisma.moneda.create({
-      data: { ID_Moneda, Nombre, Codigo, Simbolo },
-    });
-    res.json(moneda);
+    let resultado;
+    if (Array.isArray(data)) {
+      // Si es un array: crear varias monedas
+      resultado = await prisma.moneda.createMany({
+        data: data,
+      });
+
+      res.json({
+        message: `${resultado.count} monedas creadas.`,
+      });
+
+    } else {
+      // Si es un objeto: crear una sola moneda
+      const { Nombre, Codigo, Simbolo } = data;
+
+      resultado = await prisma.moneda.create({
+        data: { Nombre, Codigo, Simbolo },
+      });
+
+      res.json(resultado);
+    }
+
   } catch (error) {
+    console.error("-----Error al crear Moneda(s)---- ", error);
     res.status(400).json({ error: error.message });
-    console.error("-----Error al crear Pasi---- ", error);
   }
 };
 
-//Optener
 
+//Obtener
 export const verMonedas = async (req, res) => {
   try {
     const monedas = await prisma.moneda.findMany({});
@@ -24,3 +42,30 @@ export const verMonedas = async (req, res) => {
     res.status(500).json({});
   }
 };
+
+//Actializar
+export const actualizarMonedas = async (req, res) => {
+  const {id} = req.params;
+  const { Nombre, Codigo, Simbolo } = req.body;
+  try {
+    const moneda = await prisma.moneda.update({
+      where: { ID_Moneda: parseInt(id)},
+      data: {Nombre, Codigo, Simbolo}
+    });
+    res.json(moneda);
+  } catch (error) {
+    res.status(400).json({ error: "Moneda no encontrada" });
+  }
+}
+//Eliminar
+export const eliminarMonedas = async (req, res) => {
+  const {id} = req.params;
+  try {
+    const moneda = await prisma.moneda.delete({
+      where: {ID_Moneda: parseInt(id)}
+    });
+    res.json({message: "Moneda eliminada"});
+  } catch (error) {
+    res.status(400).json({ error: "Moneda no encontrada" });
+  }
+}
