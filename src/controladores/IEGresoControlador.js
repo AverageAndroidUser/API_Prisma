@@ -3,7 +3,27 @@ import prisma  from "../prismaClient.js";
 export const verIngresos = async (req, res) => {
     try {
         const ingresos = await prisma.iEGreso.findMany({
-            where: {TipoIEgreso: true, ID_Usuario: 2}
+            where: {TipoIEgreso: true, ID_Usuario: 2},
+            include: {
+                CategoriaIEgreso: true,
+                Usuario: {
+                    include: {
+                        Ciudad: {
+                            include: {
+                                EstadoDepartamento: {
+                                    include: {
+                                        Pais: {
+                                            include: {
+                                                Moneda: true,
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         });
         res.json(ingresos);
     } catch (error) {
@@ -14,7 +34,27 @@ export const verIngresos = async (req, res) => {
 export const verEgresos = async (req, res) => {
     try {
         const egresos = await prisma.iEGreso.findMany({
-            where: {TipoIEgreso: true, ID_Usuario: 2}
+            where: {TipoIEgreso: false, ID_Usuario: 2},
+            include: {
+                CategoriaIEgreso: true,
+                Usuario: {
+                    include: {
+                        Ciudad: {
+                            include: {
+                                EstadoDepartamento: {
+                                    include: {
+                                        Pais: {
+                                            include: {
+                                                Moneda: true,
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         });
         res.json(egresos);
     } catch (error) {
@@ -25,7 +65,27 @@ export const verEgresos = async (req, res) => {
 export const verIEGresos = async (req, res) => {
     try {
         const IEGresos = await prisma.iEGreso.findMany({
-            where: {ID_Usuario: 2}
+            where: {ID_Usuario: 2},
+            include: {
+                CategoriaIEgreso: true,
+                Usuario: {
+                    include: {
+                        Ciudad: {
+                            include: {
+                                EstadoDepartamento: {
+                                    include: {
+                                        Pais: {
+                                            include: {
+                                                Moneda: true,
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         });
         res.json(IEGresos);
     } catch (error) {
@@ -34,44 +94,95 @@ export const verIEGresos = async (req, res) => {
 }
 
 export const crearIngreso = async (req, res) => {
-    const {Nombre, Descripcion, FechaIEGreso, Monto, ID_CategoriaIEgreso} = req.body;
-    try {
-        const nuevoIEgreso = await prisma.iEGreso.create({
-            data: {
-                Nombre,
-                Descripcion,
-                FechaIEGreso,
-                Monto,
-                TipoIEgreso: true,
-                ID_CategoriaIEgreso,
-                ID_Usuario: 2
-            }
-        });
-        res.status(201).json(nuevoIEgreso);
-    } catch (error) {
-        res.status(400).json({error: "Error al crear el ingreso"});
+  const data = req.body;
+
+  try {
+    let resultado;
+
+    if (Array.isArray(data)) {
+      const ingresos = data.map(ingreso => ({
+        Nombre: ingreso.Nombre,
+        Descripcion: ingreso.Descripcion,
+        FechaIEGreso: new Date(ingreso.FechaIEGreso),
+        Monto: ingreso.Monto,
+        TipoIEgreso: true,
+        ID_CategoriaIEgreso: ingreso.ID_CategoriaIEgreso,
+        ID_Usuario: ingreso.ID_Usuario || 2 
+      }));
+
+      resultado = await prisma.iEGreso.createMany({
+        data: ingresos,
+      });
+
+    } else {
+      resultado = await prisma.iEGreso.create({
+        data: {
+          Nombre: data.Nombre,
+          Descripcion: data.Descripcion,
+          FechaIEGreso: new Date(data.FechaIEGreso),
+          Monto: data.Monto,
+          TipoIEgreso: true,
+          ID_CategoriaIEgreso: data.ID_CategoriaIEGreso,
+          ID_Usuario: data.ID_Usuario || 2,
+        },
+      });
     }
-}
+
+    res.status(201).json(resultado);
+
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ error: "Error al crear el ingreso" });
+  }
+};
+
+
 
 export const crearEgreso = async (req, res) => {
-    const {Nombre, Descripcion, FechaIEGreso, Monto, ID_CategoriaIEgreso} = req.body;
-    try {
-        const nuevoIEgreso = await prisma.iEGreso.create({
-            data: {
-                Nombre,
-                Descripcion,
-                FechaIEGreso,
-                Monto,
-                TipoIEgreso: true,
-                ID_CategoriaIEgreso,
-                ID_Usuario: 2
-            }
-        });
-        res.status(201).json(nuevoIEgreso);
-    } catch (error) {
-        res.status(400).json({error: "Error al crear el egreso"});
+  const data = req.body;
+
+  try {
+    let resultado;
+
+    if (Array.isArray(data)) {
+      // Si es un array, crea varios
+      const egresos = data.map(egreso => ({
+        Nombre: egreso.Nombre,
+        Descripcion: egreso.Descripcion,
+        FechaIEGreso: new Date(egreso.FechaIEGreso),
+        Monto: egreso.Monto,
+        TipoIEgreso: false,
+        ID_CategoriaIEgreso: egreso.ID_CategoriaIEgreso,
+        ID_Usuario: egreso.ID_Usuario || 2  // Default si no mandan usuario
+      }));
+
+      resultado = await prisma.iEGreso.createMany({
+        data: egresos,
+      });
+
+    } else {
+      // Si es un solo objeto, crea uno
+      resultado = await prisma.iEGreso.create({
+        data: {
+          Nombre: data.Nombre,
+          Descripcion: data.Descripcion,
+          FechaIEGreso: new Date(data.FechaIEGreso),
+          Monto: data.Monto,
+          TipoIEgreso: false,
+          ID_CategoriaIEgreso: data.ID_CategoriaIEgreso,
+          ID_Usuario: data.ID_Usuario || 2,
+        },
+      });
     }
-}
+
+    res.status(201).json(resultado);
+
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ error: "Error al crear el egreso" });
+  }
+};
+
 
 export const eliminarIEGreso = async (req, res) => {
     const {id} = req.params;

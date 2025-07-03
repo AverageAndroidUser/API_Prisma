@@ -1,8 +1,9 @@
 import express from "express";
-import {verIngresos, verEgresos, crearIngreso, crearEgreso, actualizarIEGreso, eliminarIEGreso} from "../controladores/IEGresoControlador.js";
+import {verIEGresos, verIngresos, verEgresos, crearIngreso, crearEgreso, actualizarIEGreso, eliminarIEGreso} from "../controladores/IEGresoControlador.js";
 
 const router = express.Router();
 
+router.get("/verIEGresos", verIEGresos);
 router.get("/verIngresos", verIngresos);
 router.get("/verEgresos", verEgresos);
 router.post("/crearIngreso", crearIngreso);
